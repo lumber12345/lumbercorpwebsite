@@ -1,0 +1,30 @@
+# Render Blueprint — deploy the Lumbercorp static site
+# https://render.com/docs/blueprint-spec
+#
+# This defines a single **Static Site** service. No build command is needed —
+# the site is plain HTML/CSS/JS and your image.
+#
+# To deploy:
+#   1. Push this folder (containing render.yaml + lumbercorp/) to a GitHub repo.
+#   2. On render.com: New -> Blueprint -> connect the repo  (or New -> Static Site
+#      and set Publish Directory = lumbercorp).
+#   3. Render reads render.yaml, builds & publishes /lumbercorp at the root path.
+#
+# Blueprint ID
+services:
+  - type: web
+    name: lumbercorp
+    runtime: static
+    # Serve the site that lives in the lumbercorp/ subfolder of this repo
+    buildCommand: ""            # no build step
+    staticPublishPath: ./lumbercorp
+    # Health check so Render reports healthy once index.html is served
+    healthCheckPath: /index.html
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    # Optional: custom domain / plan
+    # plan: free
+    # domains:
+    #   - lumbercorp.com

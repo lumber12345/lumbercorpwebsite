@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LUMBERCORP</title>
+<style>
+  :root{
+    --green:#00ff41;
+    --green-dim:rgba(0,255,65,.12);
+    --bg:#020403;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg);
+    overflow:hidden;
+    font-family:"Courier New",ui-monospace,Consolas,monospace;
+    color:var(--green);
+  }
+
+  /* Matrix rain canvas */
+  #rain{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    z-index:1;
+    display:block;
+  }
+
+  /* Dark scrim that hides rain everywhere EXCEPT through the title letters */
+  #hole{
+    position:fixed;
+    inset:0;
+    z-index:2;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+  }
+
+  /* Faint outline glow so the cut-out title still reads as a word */
+  #outline{
+    position:fixed;
+    inset:0;
+    z-index:3;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+  }
+
+  .caption{
+    position:fixed;
+    z-index:4;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    letter-spacing:.35em;
+    text-transform:uppercase;
+    pointer-events:none;
+    text-shadow:0 0 8px var(--green),0 0 22px rgba(0,255,65,.5);
+    text-align:center;
+  }
+  .caption.top{top:34px;font-size:12px;color:rgba(0,255,65,.55);}
+  .caption.bottom{bottom:36px;font-size:12px;color:rgba(0,255,65,.4);}
+  .hl{color:var(--green);}
+
+  /* Red Pill button (placed just below the title) */
+  .red-pill{
+    position:fixed;
+    z-index:8;
+    left:50%;
+    transform:translateX(-50%);
+    top:calc(50% + 118px);
+    appearance:none;
+    border:2px solid #ff1a1a;
+    background:#000;
+    color:#ff3b3b;
+    font-family:"Courier New",ui-monospace,Consolas,monospace;
+    font-size:20px;
+    font-weight:bold;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    padding:16px 46px;
+    border-radius:999px;
+    cursor:pointer;
+    box-shadow:0 0 0 rgba(255,26,26,0);
+    text-shadow:0 0 8px rgba(255,59,59,.6);
+    transition:box-shadow .18s ease, background .18s ease, color .18s ease, letter-spacing .18s ease;
+  }
+  .red-pill:hover{
+    background:#ff1a1a;
+    color:#000;
+    text-shadow:none;
+    box-shadow:0 0 24px rgba(255,26,26,.9), inset 0 0 12px rgba(255,255,255,.25);
+    letter-spacing:.34em;
+  }
+  .red-pill:active{ transform:translateX(-50%) scale(.97); }
+  @media (max-width:640px){
+    .red-pill{ font-size:15px; padding:13px 34px; top:calc(50% + 84px); }
+  }
+
+  /* subtle scanline effect */
+  .scanlines{
+    position:fixed;inset:0;z-index:5;pointer-events:none;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,.10) 3px,
+      rgba(0,0,0,0) 4px
+    );
+    mix-blend-mode:multiply;
+  }
+</style>
+</head>
+<body>
+
+  <canvas id="rain"></canvas>
+
+  <!-- Full-screen dark scrim with the title punched out as a mask -->
+  <svg id="hole" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <mask id="titleMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="600">
+        <rect width="1000" height="600" fill="#ffffff"/>
+        <text x="500" y="325" font-family="Courier New, monospace" font-weight="bold"
+              font-size="220" text-anchor="middle" dominant-baseline="middle"
+              letter-spacing="6" fill="#000000">LUMBERCORP</text>
+      </mask>
+    </defs>
+    <rect width="1000" height="600" fill="rgba(2,4,3,0.80)" mask="url(#titleMask)"/>
+  </svg>
+
+  <!-- Green outline to make the cut-out letters legible -->
+  <svg id="outline" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="rgba(0,255,65,0.35)" stroke-width="1.6">
+      <text x="500" y="325" font-family="Courier New, monospace" font-weight="bold"
+            font-size="220" text-anchor="middle" dominant-baseline="middle"
+            letter-spacing="6">LUMBERCORP</text>
+    </g>
+  </svg>
+
+  <div class="caption top">SYSTEM&#x2026; ONLINE &mdash; FOLLOW THE WHITE RABBIT <span class="hl">&#9724;</span></div>
+
+  <button class="red-pill" id="redPill" type="button">Red Pill</button>
+
+  <div class="caption bottom">LUMBERCORP &copy; <span id="year"></span> &mdash; WAKE UP, NEO&hellip;</div>
+
+  <div class="scanlines"></div>
+
+<script>
+  const canvas = document.getElementById('rain');
+  const ctx = canvas.getContext('2d');
+
+  let width, height;
+  const fontSize = 16;
+  let columns = [];
+  let drops = [];
+
+  function fit(){
+    width = canvas.width  = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    columns = Math.floor(width / fontSize);
+    drops = [];
+    for(let i=0;i<columns;i++){
+      drops[i] = Math.floor(Math.random() * -height/fontSize);
+    }
+  }
+  fit();
+  window.addEventListener('resize', fit);
+
+  // Map both SVGs into the real viewport in pixels so text stays crisp
+  function layoutOverlays(){
+    for(const id of ['hole','outline']){
+      const svg = document.getElementById(id);
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      const text = svg.querySelector('text');
+      text.setAttribute('x', width/2);
+      text.setAttribute('y', height/2);
+      const fs = Math.min(width*0.11, 200);
+      text.setAttribute('font-size', fs);
+    }
+  }
+  layoutOverlays();
+  window.addEventListener('resize', layoutOverlays);
+
+  // Korean/katakana/numbers for the classic matrix glyph set
+  const glyphs = 'アカサタナハマヤラワ0123456789アイウエオカキクケコサシスセソTECHNOLOGY0123456789$#%&@';
+  const chars = glyphs.split('');
+
+  function draw(){
+    // translucent black to create trailing fade
+    ctx.fillStyle = 'rgba(2,4,3,0.08)';
+    ctx.fillRect(0,0,width,height);
+
+    ctx.font = fontSize + 'px "Courier New", monospace';
+    for(let i=0;i<columns;i++){
+      const char = chars[Math.floor(Math.random()*chars.length)];
+      const x = i*fontSize;
+      const y = drops[i]*fontSize;
+
+      // bright leading head
+      ctx.fillStyle = Math.random() > 0.975 ? 'rgba(220,255,230,0.95)' : 'rgba(0,255,65,0.85)';
+      ctx.fillText(char, x, y);
+
+      if(y > height && Math.random() > 0.975){
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ============================================================
+  //  RED PILL  ->  goes to the "redpill" page (matrix-city background)
+  //  Change this path if you rename the destination file.
+  // ============================================================
+  document.getElementById('redPill').addEventListener('click', function(){
+    // glitch flash, then navigate
+    this.style.transform='translateX(-50%) scale(.96)';
+    setTimeout(()=>window.location.href='redpill.html', 130);
+  });
+</script>
+</body>
+</html>

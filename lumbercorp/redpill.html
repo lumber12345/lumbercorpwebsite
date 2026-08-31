@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LUMBERCORP &mdash; You took the Red Pill</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    min-height:100vh;
+    background:#020403;
+    color:#e8fff0;
+    font-family:"Courier New",ui-monospace,Consolas,monospace;
+    overflow-x:hidden;
+  }
+
+  /* Full-screen background image */
+  .bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+  }
+
+  /* Dark vignette + green tint so text reads on top */
+  .scrim{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    background:
+      radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.72) 100%),
+      linear-gradient(rgba(0,255,65,0.06), rgba(0,0,0,0.35));
+    pointer-events:none;
+  }
+
+  /* content layer */
+  .wrap{
+    position:relative;
+    z-index:2;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:48px 24px;
+  }
+
+  .tag{
+    letter-spacing:.4em;
+    text-transform:uppercase;
+    color:rgba(0,255,65,.9);
+    font-size:13px;
+    margin-bottom:22px;
+    text-shadow:0 0 10px rgba(0,255,65,.5);
+  }
+
+  h1{
+    font-size:clamp(40px, 9vw, 96px);
+    font-weight:900;
+    line-height:.95;
+    letter-spacing:.04em;
+    color:#fff;
+    text-shadow:
+      0 0 12px rgba(0,255,65,.9),
+      0 0 40px rgba(0,255,65,.4),
+      0 4px 30px rgba(0,0,0,.8);
+    margin-bottom:18px;
+  }
+
+  p{
+    max-width:640px;
+    color:rgba(232,255,240,.82);
+    font-size:clamp(15px,2.2vw,19px);
+    line-height:1.6;
+    letter-spacing:.03em;
+    margin-bottom:36px;
+    text-shadow:0 2px 12px rgba(0,0,0,.9);
+  }
+
+  .glow-line{
+    width:220px;
+    height:1px;
+    background:linear-gradient(90deg,transparent,#00ff41,transparent);
+    margin-bottom:40px;
+    box-shadow:0 0 12px rgba(0,255,65,.7);
+  }
+
+  .btn{
+    appearance:none;
+    background:rgba(0,0,0,.55);
+    border:2px solid #ff1a1a;
+    color:#ff3b3b;
+    font-family:inherit;
+    font-size:17px;
+    font-weight:bold;
+    letter-spacing:.26em;
+    text-transform:uppercase;
+    padding:15px 44px;
+    border-radius:999px;
+    cursor:pointer;
+    text-shadow:0 0 8px rgba(255,59,59,.6);
+    transition:background .18s ease, color .18s ease, box-shadow .18s ease, letter-spacing .18s ease;
+  }
+  .btn:hover{
+    background:#ff1a1a;
+    color:#000;
+    text-shadow:none;
+    box-shadow:0 0 22px rgba(255,26,26,.85);
+    letter-spacing:.32em;
+  }
+  .btn:active{ transform:scale(.97); }
+
+  /* === LumberCorp Companion button (matches Torn Rank Wars red theme) === */
+  .btn-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+  }
+  .btn-companion{
+    appearance:none;
+    background:rgba(0,0,0,.55);
+    border:2px solid #ff1a1a;
+    color:#ff3b3b;
+    font-family:inherit;
+    font-size:17px;
+    font-weight:bold;
+    letter-spacing:.26em;
+    text-transform:uppercase;
+    padding:15px 44px;
+    border-radius:999px;
+    cursor:pointer;
+    text-shadow:0 0 8px rgba(255,59,59,.6);
+    transition:background .18s ease, color .18s ease, box-shadow .18s ease, letter-spacing .18s ease;
+  }
+  .btn-companion:hover{
+    background:#ff1a1a;
+    color:#000;
+    text-shadow:none;
+    box-shadow:0 0 24px rgba(255,26,26,.85);
+    letter-spacing:.32em;
+  }
+  .btn-companion:active{ transform:scale(.97); }
+
+  .foot{
+    position:fixed;
+    bottom:30px;
+    left:0;
+    right:0;
+    z-index:2;
+    text-align:center;
+    color:rgba(0,255,65,.5);
+    font-size:12px;
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    pointer-events:none;
+    text-shadow:0 0 8px rgba(0,255,65,.4);
+  }
+
+  /* Donate link banner at the top */
+  .donate{
+    position:fixed;
+    top:18px;
+    left:0;
+    right:0;
+    z-index:3;
+    text-align:center;
+    font-size:14px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+  }
+  .donate a{
+    color:#ffe08a;
+    text-decoration:none;
+    text-shadow:0 0 10px rgba(255,224,138,.6),0 2px 12px rgba(0,0,0,.9);
+    padding:6px 16px;
+    border:1px solid rgba(255,224,138,.4);
+    border-radius:999px;
+    background:rgba(0,0,0,.35);
+    transition:background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .donate a:hover{
+    background:#ffe08a;
+    color:#000;
+    text-shadow:none;
+    border-color:#ffe08a;
+  }
+</style>
+</head>
+<body>
+  <img class="bg" src="matrix-city.jpg" alt="" />
+  <div class="scrim"></div>
+
+  <div class="donate"><a href="https://www.torn.com/profiles.php?XID=4428819" id="donateLink">If you would like to donate, click here</a></div>
+
+  <div class="wrap">
+    <div class="tag">you took the red pill&hellip;</div>
+    <h1>WELCOME TO<br />LUMBERCORP</h1>
+    <div class="glow-line"></div>
+    <p>You chose the red pill. The code is on the walls, the streets hum with data, and the rain has stopped falling &mdash; because <em>you</em> are the one being watched.</p>
+    <div class="btn-wrap">
+      <button class="btn" id="warsBtn" type="button">Torn Rank Wars</button>
+      <button class="btn-companion" id="companionBtn" type="button">LumberCorp Companion</button>
+    </div>
+  </div>
+
+  <div class="foot">LUMBERCORP &mdash; WAKE UP &copy; <span id="year"></span></div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Donate link: opens in the current window (popups are blocked inside
+  // the sandboxed preview; plain same-tab navigation always works).
+  document.getElementById('donateLink').addEventListener('click', function(e){
+    e.preventDefault();
+    window.location.href = 'https://www.torn.com/profiles.php?XID=4428819';
+  });
+
+  // ============================================================
+  //  "TORN RANK WARS" button -> live deployed app
+  // ============================================================
+  const WARS_TARGET = "https://rankwars.onrender.com/";
+
+  document.getElementById('warsBtn').addEventListener('click', function(){
+    if(WARS_TARGET && WARS_TARGET.trim()){
+      window.location.href = WARS_TARGET;
+    } else {
+      // glitch flash placeholder until a destination is set
+      this.style.transform = 'scale(.97)';
+      setTimeout(()=>this.style.transform = 'scale(1)', 120);
+    }
+  });
+
+  // ============================================================
+  //  "LUMBERCORP COMPANION" button -> live deployed app
+  // ============================================================
+  const COMPANION_TARGET = "https://lumbercorp-companion.onrender.com";
+
+  document.getElementById('companionBtn').addEventListener('click', function(){
+    if(COMPANION_TARGET && COMPANION_TARGET.trim()){
+      window.location.href = COMPANION_TARGET;
+    } else {
+      this.style.transform = 'scale(.97)';
+      setTimeout(()=>this.style.transform = 'scale(1)', 120);
+    }
+  });
+</script>
+</body>
+</html>
