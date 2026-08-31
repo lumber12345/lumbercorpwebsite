@@ -196,7 +196,7 @@
   <img class="bg" src="matrix-city.jpg" alt="" />
   <div class="scrim"></div>
 
-  <div class="donate"><a href="https://www.torn.com/profiles.php?XID=4428819" id="donateLink">If you would like to donate, click here</a></div>
+  <div class="donate"><a href="https://www.torn.com/profiles.php?XID=4428819" target="_blank" rel="noopener noreferrer" id="donateLink">If you would like to donate, click here</a></div>
 
   <div class="wrap">
     <div class="tag">you took the red pill&hellip;</div>
@@ -214,11 +214,16 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Donate link: opens in the current window (popups are blocked inside
-  // the sandboxed preview; plain same-tab navigation always works).
+  // Donate link: open torn.com in a NEW TAB. Navigating in the current tab
+  // gets refused because torn.com blocks being loaded inside a frame.
+  // (The anchor also has target="_blank" + rel="noopener" as a fallback.)
   document.getElementById('donateLink').addEventListener('click', function(e){
-    e.preventDefault();
-    window.location.href = 'https://www.torn.com/profiles.php?XID=4428819';
+    // let the browser do the default target="_blank" navigation — we only
+    // intercept to use window.open as a more reliable path in real browsers.
+    if(typeof window.open === 'function' && window.open){
+      const w = window.open('https://www.torn.com/profiles.php?XID=4428819', '_blank');
+      if(w){ e.preventDefault(); }
+    }
   });
 
   // ============================================================
