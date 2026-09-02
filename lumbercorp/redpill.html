@@ -206,6 +206,7 @@
     <div class="btn-wrap">
       <button class="btn" id="warsBtn" type="button">Torn Rank Wars</button>
       <button class="btn-companion" id="companionBtn" type="button">LumberCorp Companion</button>
+      <button class="btn-companion" id="targetBtn" type="button">LumberCorp Target Finder</button>
     </div>
   </div>
 
@@ -249,6 +250,20 @@
   document.getElementById('companionBtn').addEventListener('click', function(){
     if(COMPANION_TARGET && COMPANION_TARGET.trim()){
       window.location.href = COMPANION_TARGET;
+    } else {
+      this.style.transform = 'scale(.97)';
+      setTimeout(()=>this.style.transform = 'scale(1)', 120);
+    }
+  });
+
+  // ============================================================
+  //  "LUMBERCORP TARGET FINDER" button -> live deployed app
+  // ============================================================
+  const TARGET_TARGET = "https://lumbercorp-target-finder.onrender.com";
+
+  document.getElementById('targetBtn').addEventListener('click', function(){
+    if(TARGET_TARGET && TARGET_TARGET.trim()){
+      window.location.href = TARGET_TARGET;
     } else {
       this.style.transform = 'scale(.97)';
       setTimeout(()=>this.style.transform = 'scale(1)', 120);
