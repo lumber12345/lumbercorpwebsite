@@ -175,6 +175,7 @@
     text-transform:uppercase;
   }
   .donate a{
+    display:inline-block;
     color:#ffe08a;
     text-decoration:none;
     text-shadow:0 0 10px rgba(255,224,138,.6),0 2px 12px rgba(0,0,0,.9);
@@ -182,13 +183,35 @@
     border:1px solid rgba(255,224,138,.4);
     border-radius:999px;
     background:rgba(0,0,0,.35);
-    transition:background .18s ease, color .18s ease, border-color .18s ease;
+    animation:donateFlash 1.1s ease-in-out infinite;
+    transition:background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
   .donate a:hover{
+    animation:none;
+    opacity:1;
     background:#ffe08a;
     color:#000;
     text-shadow:none;
     border-color:#ffe08a;
+    box-shadow:0 0 20px rgba(255,224,138,.9);
+  }
+  @keyframes donateFlash{
+    0%, 100%{
+      opacity:1;
+      color:#fff6cc;
+      border-color:#ffe08a;
+      background:rgba(255,224,138,.22);
+      box-shadow:0 0 18px rgba(255,224,138,.85), 0 0 32px rgba(255,224,138,.45);
+      text-shadow:0 0 14px rgba(255,224,138,1), 0 2px 12px rgba(0,0,0,.9);
+    }
+    50%{
+      opacity:.18;
+      color:#ffe08a;
+      border-color:rgba(255,224,138,.25);
+      background:rgba(0,0,0,.35);
+      box-shadow:0 0 4px rgba(255,224,138,.15);
+      text-shadow:0 0 4px rgba(255,224,138,.3), 0 2px 12px rgba(0,0,0,.9);
+    }
   }
 </style>
 </head>
@@ -207,6 +230,7 @@
       <button class="btn" id="warsBtn" type="button">Torn Rank Wars</button>
       <button class="btn-companion" id="companionBtn" type="button">LumberCorp Companion</button>
       <button class="btn-companion" id="targetBtn" type="button">LumberCorp Target Finder</button>
+      <button class="btn-companion" id="lumbercorp2Btn" type="button">LUMBERCORP 2.0</button>
     </div>
   </div>
 
@@ -264,6 +288,20 @@
   document.getElementById('targetBtn').addEventListener('click', function(){
     if(TARGET_TARGET && TARGET_TARGET.trim()){
       window.location.href = TARGET_TARGET;
+    } else {
+      this.style.transform = 'scale(.97)';
+      setTimeout(()=>this.style.transform = 'scale(1)', 120);
+    }
+  });
+
+  // ============================================================
+  //  "LUMBERCORP 2.0" button -> live deployed app
+  // ============================================================
+  const LUMBERCORP2_TARGET = "https://lumbercorp2-ijch.onrender.com";
+
+  document.getElementById('lumbercorp2Btn').addEventListener('click', function(){
+    if(LUMBERCORP2_TARGET && LUMBERCORP2_TARGET.trim()){
+      window.location.href = LUMBERCORP2_TARGET;
     } else {
       this.style.transform = 'scale(.97)';
       setTimeout(()=>this.style.transform = 'scale(1)', 120);
